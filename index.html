@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AR Safety Training</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- AR.js -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    #ui {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      z-index: 999;
+    }
+
+    button {
+      padding: 14px 16px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: none;
+      margin: 4px;
+      background: #e53935;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+
+  <script>
+    /* Auto rotate */
+    AFRAME.registerComponent('auto-rotate', {
+      tick: function () {
+        this.el.object3D.rotation.y += 0.003;
+      }
+    });
+
+    function hideAll() {
+      document.querySelector('#extinguisher').setAttribute('visible', false);
+      document.querySelector('#alarm').setAttribute('visible', false);
+      document.querySelector('#smoke').setAttribute('visible', false);
+    }
+
+    function showExtinguisher() {
+      hideAll();
+      document.querySelector('#extinguisher').setAttribute('visible', true);
+      document.querySelector('#infoText').setAttribute(
+        'value',
+        "🧯 FIRE EXTINGUISHER\n\nUsed to control small fires.\n\nPASS Method:\nP - Pull the pin\nA - Aim at the base of the fire\nS - Squeeze the handle\nS - Sweep side to side"
+      );
+    }
+
+    function showAlarm() {
+      hideAll();
+      document.querySelector('#alarm').setAttribute('visible', true);
+      document.querySelector('#infoText').setAttribute(
+        'value',
+        "🚨 FIRE ALARM\n\nUsed to alert people of a fire.\n\nHow to use:\n1. Break the glass or press the button\n2. Alarm will sound loudly\n3. Evacuate the building immediately"
+      );
+    }
+
+    function showSmokeDetector() {
+      hideAll();
+      document.querySelector('#smoke').setAttribute('visible', true);
+      document.querySelector('#infoText').setAttribute(
+        'value',
+        "🔥 SMOKE DETECTOR (Apollo)\n\nDetects smoke and fire early.\n\nHow it works:\n1. Detects smoke particles\n2. Sends signal to fire alarm system\n3. Alerts occupants to evacuate\n\nImportant:\nDo not block or cover the detector."
+      );
+    }
+  </script>
+</head>
+
+<body style="margin:0; overflow:hidden;">
+
+<!-- UI Buttons -->
+<div id="ui">
+  <button onclick="showExtinguisher()">🧯 Fire Extinguisher</button>
+  <button onclick="showAlarm()">🚨 Fire Alarm</button>
+  <button onclick="showSmokeDetector()">🔥 Smoke Detector</button>
+</div>
+
+<a-scene embedded arjs>
+
+  <!-- Assets -->
+  <a-assets>
+    <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
+    <a-asset-item id="alarmModel" src="fire_alarm.glb"></a-asset-item>
+    <a-asset-item id="smokeModel" src="apollo_smoke_detector.glb"></a-asset-item>
+  </a-assets>
+
+  <!-- Marker -->
+  <a-marker preset="hiro">
+
+    <!-- Fire Extinguisher -->
+    <a-entity
+      id="extinguisher"
+      gltf-model="#extModel"
+      scale="9 9 9"
+      visible="true"
+      auto-rotate>
+    </a-entity>
+
+    <!-- Fire Alarm -->
+    <a-entity
+      id="alarm"
+      gltf-model="#alarmModel"
+      scale="0.2 0.2 0.2"
+      visible="false"
+      auto-rotate>
+    </a-entity>
+
+    <!-- Smoke Detector -->
+    <a-entity
+      id="smoke"
+      gltf-model="#smokeModel"
+      scale="1 1 1"
+      position="0 1 0"
+      visible="false"
+      auto-rotate>
+    </a-entity>
+
+    <!-- Info Panel -->
+    <a-plane
+      position="3 2 0"
+      width="4"
+      height="2.3"
+      color="#ffffff"
+      opacity="0.9">
+    </a-plane>
+
+    <a-text
+      id="infoText"
+      value="🧯 FIRE EXTINGUISHER\n\nUsed to control small fires.\n\nPASS Method:\nP - Pull the pin\nA - Aim at the base of the fire\nS - Squeeze the handle\nS - Sweep side to side"
+      align="center"
+      color="#000000"
+      position="3 2 0.1"
+      width="3.6">
+    </a-text>
+
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+</body>
+</html>
