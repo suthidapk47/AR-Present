@@ -9,55 +9,16 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-
-    /* UI ปุ่มกด */
-    #ui {
-      position: fixed;
-      bottom: 20px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      z-index: 10;
-      pointer-events: none; /* ให้กดทะลุส่วนว่างได้ */
-    }
-
-    #ui-inner {
-      pointer-events: auto; /* ให้กดปุ่มได้ */
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 14px;
-      border-radius: 20px;
-      border: none;
-      background: rgba(211, 47, 47, 0.9);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-
-    button:active {
-      background: #b71c1c;
-      transform: scale(0.95);
-    }
+    body { margin: 0; padding: 0; overflow: hidden; font-family: Arial, sans-serif; }
+    #ui { position: fixed; bottom: 20px; left: 0; width: 100%; text-align: center; z-index: 10; pointer-events: none; }
+    #ui-inner { pointer-events: auto; display: flex; justify-content: center; gap: 10px; }
+    button { padding: 10px 20px; font-size: 14px; border-radius: 20px; border: none; background: rgba(211, 47, 47, 0.9); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+    button:active { background: #b71c1c; transform: scale(0.95); }
   </style>
 
   <script>
-    // Component หมุนโมเดลอัตโนมัติ
     AFRAME.registerComponent('auto-rotate', {
-      tick: function () {
-        this.el.object3D.rotation.y += 0.01;
-      }
+      tick: function () { this.el.object3D.rotation.y += 0.01; }
     });
 
     function hideAll() {
@@ -69,21 +30,22 @@
     function showExtinguisher() {
       hideAll();
       document.querySelector('#ext').setAttribute('visible', true);
-      const text = "FIRE EXTINGUISHER\n\nPurpose:\nUsed to control small fires.\n\nPASS Method:\nP - Pull the pin\nA - Aim at the base\nS - Squeeze the handle\nS - Sweep side to side";
+      /* จัดรูปแบบข้อความใหม่ให้อ่านง่ายขึ้น */
+      const text = "FIRE EXTINGUISHER\n------------------\nPURPOSE:\nControl small fires\n\nPASS METHOD:\nP - Pull Pin\nA - Aim Base\nS - Squeeze\nS - Sweep";
       document.querySelector('#info').setAttribute('value', text);
     }
 
     function showAlarm() {
       hideAll();
       document.querySelector('#alarm').setAttribute('visible', true);
-      const text = "FIRE ALARM\n\nPurpose:\nAlerts people during a fire.\n\nHow to use:\n1. Break glass/Press button\n2. Alarm will sound\n3. Evacuate immediately";
+      const text = "FIRE ALARM\n------------------\nPURPOSE:\nAlert everyone\n\nACTION:\n1. Break Glass\n2. Press Button\n3. Evacuate";
       document.querySelector('#info').setAttribute('value', text);
     }
 
     function showSmoke() {
       hideAll();
       document.querySelector('#smoke').setAttribute('visible', true);
-      const text = "SMOKE DETECTOR\n\nPurpose:\nDetects smoke early.\n\nHow it works:\n- Detects particles\n- Triggers alarm\n\nImportant:\nNever cover or disable.";
+      const text = "SMOKE DETECTOR\n------------------\nPURPOSE:\nDetect smoke early\n\nNOTE:\n- Auto Trigger\n- Do not cover";
       document.querySelector('#info').setAttribute('value', text);
     }
   </script>
@@ -99,11 +61,7 @@
     </div>
   </div>
 
-  <a-scene
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-    vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true;">
 
     <a-assets>
       <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
@@ -112,30 +70,25 @@
     </a-assets>
 
     <a-marker preset="hiro">
-
       <a-entity light="type: ambient; color: #BBB"></a-entity>
       <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
 
-      <a-entity id="ext" gltf-model="#extModel" scale="0.5 0.5 0.5" visible="true" auto-rotate></a-entity>
-      <a-entity id="alarm" gltf-model="#alarmModel" scale="0.5 0.5 0.5" visible="false" auto-rotate></a-entity>
-      <a-entity id="smoke" gltf-model="#smokeModel" scale="0.5 0.5 0.5" visible="false" auto-rotate></a-entity>
+      <a-entity id="ext" gltf-model="#extModel" scale="9 9 9" visible="true" auto-rotate></a-entity>
+      <a-entity id="alarm" gltf-model="#alarmModel" scale="0.25 0.25 0.25" visible="false" auto-rotate></a-entity>
+      <a-entity id="smoke" gltf-model="#smokeModel" scale="0.4 0.4 0.4" visible="false" auto-rotate></a-entity>
 
-      <a-entity position="0 0.8 0" scale="2 2 2">
-          <a-plane color="#000" opacity="0.7" width="2" height="1.5" position="1.2 0 0"></a-plane>
-          <a-text id="info"
-                  value="Scan Marker to Start"
-                  align="center"
-                  color="#FFF"
-                  position="1.2 0 0.1"
-                  width="1.8"
-                  wrap-count="30">
-          </a-text>
+      <a-entity position="1.5 1 0" rotation="-30 0 0"> <a-plane color="#000" opacity="0.8" width="2.5" height="2"></a-plane>
+        
+        <a-text id="info"
+                value="Select an item below"
+                align="center"
+                color="#FFF"
+                width="4"
+                position="0 0 0.05"> </a-text>
+
       </a-entity>
-
-    </a-marker>
-
+      </a-marker>
     <a-entity camera></a-entity>
   </a-scene>
-
 </body>
 </html>
