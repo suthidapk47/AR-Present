@@ -2,174 +2,140 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
-  <meta name="viewport"
-        content="width=device-width,
-                 initial-scale=1.0,
-                 maximum-scale=1.0,
-                 user-scalable=no">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>AR Fire Safety Training Module</title>
 
-  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
-  <!-- AR.js (STABLE VERSION) -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #000;
-      touch-action: manipulation;
       font-family: Arial, sans-serif;
     }
 
+    /* UI ปุ่มกด */
     #ui {
       position: fixed;
+      bottom: 20px;
       left: 0;
-      right: 0;
-      bottom: env(safe-area-inset-bottom);
+      width: 100%;
       text-align: center;
-      z-index: 999;
-      padding: 6px 0;
+      z-index: 10;
+      pointer-events: none; /* ให้กดทะลุส่วนว่างได้ */
     }
 
     #ui-inner {
+      pointer-events: auto; /* ให้กดปุ่มได้ */
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
+      gap: 10px;
     }
 
     button {
-      padding: 12px 16px;
-      margin: 4px;
+      padding: 10px 20px;
       font-size: 14px;
-      border-radius: 8px;
+      border-radius: 20px;
       border: none;
-      background: linear-gradient(135deg,#d32f2f,#b71c1c);
+      background: rgba(211, 47, 47, 0.9);
       color: white;
-      box-shadow: 0 4px 8px rgba(0,0,0,.35);
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    button:active {
+      background: #b71c1c;
+      transform: scale(0.95);
     }
   </style>
 
   <script>
+    // Component หมุนโมเดลอัตโนมัติ
     AFRAME.registerComponent('auto-rotate', {
-      tick() {
-        this.el.object3D.rotation.y += 0.003;
+      tick: function () {
+        this.el.object3D.rotation.y += 0.01;
       }
     });
 
     function hideAll() {
-      ext.setAttribute('visible', false);
-      alarm.setAttribute('visible', false);
-      smoke.setAttribute('visible', false);
+      document.querySelector('#ext').setAttribute('visible', false);
+      document.querySelector('#alarm').setAttribute('visible', false);
+      document.querySelector('#smoke').setAttribute('visible', false);
     }
 
     function showExtinguisher() {
       hideAll();
-      ext.setAttribute('visible', true);
-      info.setAttribute('value',
-`🧯 FIRE EXTINGUISHER
-
-PASS Method:
-P – Pull the pin
-A – Aim at base
-S – Squeeze handle
-S – Sweep side to side`);
+      document.querySelector('#ext').setAttribute('visible', true);
+      const text = "FIRE EXTINGUISHER\n\nPurpose:\nUsed to control small fires.\n\nPASS Method:\nP - Pull the pin\nA - Aim at the base\nS - Squeeze the handle\nS - Sweep side to side";
+      document.querySelector('#info').setAttribute('value', text);
     }
 
     function showAlarm() {
       hideAll();
-      alarm.setAttribute('visible', true);
-      info.setAttribute('value',
-`🚨 FIRE ALARM
-
-1. Press the alarm
-2. Alert people
-3. Evacuate immediately`);
+      document.querySelector('#alarm').setAttribute('visible', true);
+      const text = "FIRE ALARM\n\nPurpose:\nAlerts people during a fire.\n\nHow to use:\n1. Break glass/Press button\n2. Alarm will sound\n3. Evacuate immediately";
+      document.querySelector('#info').setAttribute('value', text);
     }
 
     function showSmoke() {
       hideAll();
-      smoke.setAttribute('visible', true);
-      info.setAttribute('value',
-`🌫 SMOKE DETECTOR
-
-• Detects smoke early
-• Triggers alarm automatically`);
+      document.querySelector('#smoke').setAttribute('visible', true);
+      const text = "SMOKE DETECTOR\n\nPurpose:\nDetects smoke early.\n\nHow it works:\n- Detects particles\n- Triggers alarm\n\nImportant:\nNever cover or disable.";
+      document.querySelector('#info').setAttribute('value', text);
     }
-
-    window.onload = () => {
-      ext = document.querySelector('#ext');
-      alarm = document.querySelector('#alarm');
-      smoke = document.querySelector('#smoke');
-      info = document.querySelector('#info');
-    };
   </script>
 </head>
 
-<body>
+<body style="margin: 0; overflow: hidden;">
 
-<!-- UI -->
-<div id="ui">
-  <div id="ui-inner">
-    <button onclick="showExtinguisher()">🧯 Extinguisher</button>
-    <button onclick="showAlarm()">🚨 Alarm</button>
-    <button onclick="showSmoke()">🌫 Smoke</button>
+  <div id="ui">
+    <div id="ui-inner">
+      <button onclick="showExtinguisher()">🧯 Extinguisher</button>
+      <button onclick="showAlarm()">🚨 Alarm</button>
+      <button onclick="showSmoke()">🌫 Detector</button>
+    </div>
   </div>
-</div>
 
-<a-scene
-  embedded
-  vr-mode-ui="enabled: false"
-  arjs="debugUIEnabled: false;">
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true;">
 
-  <a-assets>
-    <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
-    <a-asset-item id="alarmModel" src="fire_alarm.glb"></a-asset-item>
-    <a-asset-item id="smokeModel" src="apollo_smoke_detector.glb"></a-asset-item>
-  </a-assets>
+    <a-assets>
+      <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
+      <a-asset-item id="alarmModel" src="fire_alarm.glb"></a-asset-item>
+      <a-asset-item id="smokeModel" src="apollo_smoke_detector.glb"></a-asset-item>
+    </a-assets>
 
-  <a-marker preset="hiro">
+    <a-marker preset="hiro">
 
-    <a-entity id="ext"
-              gltf-model="#extModel"
-              scale="9 9 9"
-              visible="true"
-              auto-rotate></a-entity>
+      <a-entity light="type: ambient; color: #BBB"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
 
-    <a-entity id="alarm"
-              gltf-model="#alarmModel"
-              scale="0.25 0.25 0.25"
-              visible="false"
-              auto-rotate></a-entity>
+      <a-entity id="ext" gltf-model="#extModel" scale="0.5 0.5 0.5" visible="true" auto-rotate></a-entity>
+      <a-entity id="alarm" gltf-model="#alarmModel" scale="0.5 0.5 0.5" visible="false" auto-rotate></a-entity>
+      <a-entity id="smoke" gltf-model="#smokeModel" scale="0.5 0.5 0.5" visible="false" auto-rotate></a-entity>
 
-    <a-entity id="smoke"
-              gltf-model="#smokeModel"
-              scale="0.4 0.4 0.4"
-              visible="false"
-              auto-rotate></a-entity>
+      <a-entity position="0 0.8 0" scale="2 2 2">
+          <a-plane color="#000" opacity="0.7" width="2" height="1.5" position="1.2 0 0"></a-plane>
+          <a-text id="info"
+                  value="Scan Marker to Start"
+                  align="center"
+                  color="#FFF"
+                  position="1.2 0 0.1"
+                  width="1.8"
+                  wrap-count="30">
+          </a-text>
+      </a-entity>
 
-    <a-plane position="3 2 0"
-             width="4"
-             height="2.3"
-             color="#fff"
-             opacity="0.95"></a-plane>
+    </a-marker>
 
-    <a-text id="info"
-            value="🧯 FIRE EXTINGUISHER"
-            align="left"
-            color="#000"
-            position="1.2 2.1 0.1"
-            width="3.6"></a-text>
-
-  </a-marker>
-
-  <a-entity camera></a-entity>
-</a-scene>
+    <a-entity camera></a-entity>
+  </a-scene>
 
 </body>
 </html>
