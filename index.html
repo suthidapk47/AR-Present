@@ -3,42 +3,38 @@
 <head>
   <meta charset="utf-8">
 
-  <!-- 🔒 LOCK ZOOM & SUPPORT PORTRAIT -->
+  <!-- LOCK ZOOM -->
   <meta name="viewport"
         content="width=device-width,
                  initial-scale=1.0,
                  maximum-scale=1.0,
                  user-scalable=no">
 
-  <title>AR Fire Safety Training Module</title>
+  <title>AR Fire Safety Training</title>
 
   <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
-  <!-- AR.js -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <!-- AR.js (STABLE) -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      touch-action: manipulation;
-      overscroll-behavior: none;
-      font-family: Arial, sans-serif;
       background: #000;
+      touch-action: manipulation;
     }
 
-    /* ---------- UI CONTAINER ---------- */
     #ui {
       position: fixed;
       left: 0;
       right: 0;
       bottom: env(safe-area-inset-bottom);
-      padding-bottom: 8px;
+      padding: 8px 0;
       text-align: center;
       z-index: 999;
-      pointer-events: auto;
     }
 
     #ui-inner {
@@ -53,28 +49,12 @@
       font-size: 14px;
       border-radius: 8px;
       border: none;
-      background: linear-gradient(135deg,#d32f2f,#b71c1c);
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,.35);
-    }
-
-    /* Hint text */
-    #hint {
-      position: fixed;
-      top: env(safe-area-inset-top);
-      width: 100%;
-      text-align: center;
-      font-size: 12px;
+      background: #d32f2f;
       color: #fff;
-      z-index: 999;
-      text-shadow: 0 2px 4px rgba(0,0,0,.6);
-      padding-top: 6px;
     }
   </style>
 
   <script>
-    /* Auto rotate models */
     AFRAME.registerComponent('auto-rotate', {
       tick() {
         this.el.object3D.rotation.y += 0.003;
@@ -93,17 +73,11 @@
       document.querySelector('#info').setAttribute('value',
 `🧯 FIRE EXTINGUISHER
 
-Purpose:
-Used to control small fires.
-
 PASS Method:
-P – Pull the safety pin
-A – Aim at the base of fire
-S – Squeeze the handle
-S – Sweep side to side
-
-Warning:
-Do NOT use on large fires.`
+P – Pull the pin
+A – Aim at base
+S – Squeeze handle
+S – Sweep side to side`
       );
     }
 
@@ -113,15 +87,9 @@ Do NOT use on large fires.`
       document.querySelector('#info').setAttribute('value',
 `🚨 FIRE ALARM
 
-Purpose:
-Alerts people during a fire emergency.
-
-How to use:
-1. Break the glass or press the button
-2. Alarm will sound loudly
-3. Evacuate immediately
-
-Never ignore an alarm.`
+1. Press the alarm
+2. Alert everyone
+3. Evacuate immediately`
       );
     }
 
@@ -131,16 +99,8 @@ Never ignore an alarm.`
       document.querySelector('#info').setAttribute('value',
 `🌫 SMOKE DETECTOR
 
-Purpose:
-Detects smoke and fire early.
-
-How it works:
-• Detects smoke particles
-• Triggers alarm automatically
-• Warns occupants early
-
-Important:
-Never cover or disable it.`
+Detects smoke early
+Triggers alarm automatically`
       );
     }
   </script>
@@ -148,38 +108,27 @@ Never cover or disable it.`
 
 <body>
 
-<!-- TOP HINT -->
-<div id="hint">📱 Designed for portrait mode</div>
-
-<!-- UI BUTTONS -->
 <div id="ui">
   <div id="ui-inner">
     <button onclick="showExtinguisher()">🧯 Extinguisher</button>
     <button onclick="showAlarm()">🚨 Alarm</button>
-    <button onclick="showSmoke()">🌫 Smoke Detector</button>
+    <button onclick="showSmoke()">🌫 Smoke</button>
   </div>
 </div>
 
 <a-scene
   embedded
   vr-mode-ui="enabled: false"
-  renderer="precision: mediump; antialias: true;"
-  arjs="sourceType: webcam;
-        debugUIEnabled: false;
-        displayWidth: window.innerWidth;
-        displayHeight: window.innerHeight;">
+  arjs="debugUIEnabled: false;">
 
-  <!-- ASSETS -->
   <a-assets>
     <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
     <a-asset-item id="alarmModel" src="fire_alarm.glb"></a-asset-item>
     <a-asset-item id="smokeModel" src="apollo_smoke_detector.glb"></a-asset-item>
   </a-assets>
 
-  <!-- MARKER -->
   <a-marker preset="hiro">
 
-    <!-- MODELS -->
     <a-entity id="ext"
               gltf-model="#extModel"
               scale="9 9 9"
@@ -198,36 +147,23 @@ Never cover or disable it.`
               visible="false"
               auto-rotate></a-entity>
 
-    <!-- INFO PANEL -->
     <a-plane position="3 2 0"
              width="4"
-             height="2.4"
-             color="#ffffff"
+             height="2.2"
+             color="#fff"
              opacity="0.95"></a-plane>
 
     <a-text id="info"
-            value="🧯 FIRE EXTINGUISHER
-
-Purpose:
-Used to control small fires.
-
-PASS Method:
-P – Pull the pin
-A – Aim at the base
-S – Squeeze the handle
-S – Sweep side to side"
+            value="🧯 FIRE EXTINGUISHER"
             align="left"
-            color="#000000"
-            position="1.2 2.2 0.1"
-            width="3.6"
-            line-height="50">
+            color="#000"
+            position="1.2 2.1 0.1"
+            width="3.6">
     </a-text>
 
   </a-marker>
 
-  <!-- CAMERA -->
   <a-entity camera></a-entity>
-
 </a-scene>
 
 </body>
