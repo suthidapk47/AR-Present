@@ -3,92 +3,164 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
   <title>AR Fire Safety Training Module</title>
 
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
   <style>
-    body { margin: 0; padding: 0; overflow: hidden; font-family: Arial, sans-serif; }
-    #ui { position: fixed; bottom: 20px; left: 0; width: 100%; text-align: center; z-index: 10; pointer-events: none; }
-    #ui-inner { pointer-events: auto; display: flex; justify-content: center; gap: 10px; }
-    button { padding: 10px 20px; font-size: 14px; border-radius: 20px; border: none; background: rgba(211, 47, 47, 0.9); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-    button:active { background: #b71c1c; transform: scale(0.95); }
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #000;
+    }
+
+    #ui {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #ui-inner {
+      pointer-events: auto;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 20px;
+      border: none;
+      background: rgba(211,47,47,0.9);
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
   </style>
 
   <script>
     AFRAME.registerComponent('auto-rotate', {
-      tick: function () { this.el.object3D.rotation.y += 0.01; }
+      tick() {
+        this.el.object3D.rotation.y += 0.01;
+      }
     });
 
     function hideAll() {
-      document.querySelector('#ext').setAttribute('visible', false);
-      document.querySelector('#alarm').setAttribute('visible', false);
-      document.querySelector('#smoke').setAttribute('visible', false);
+      ext.setAttribute('visible', false);
+      alarm.setAttribute('visible', false);
+      smoke.setAttribute('visible', false);
     }
 
     function showExtinguisher() {
       hideAll();
-      document.querySelector('#ext').setAttribute('visible', true);
-      /* จัดรูปแบบข้อความใหม่ให้อ่านง่ายขึ้น */
-      const text = "FIRE EXTINGUISHER\n------------------\nPURPOSE:\nControl small fires\n\nPASS METHOD:\nP - Pull Pin\nA - Aim Base\nS - Squeeze\nS - Sweep";
-      document.querySelector('#info').setAttribute('value', text);
+      ext.setAttribute('visible', true);
+      info.setAttribute('value',
+`FIRE EXTINGUISHER
+
+PURPOSE:
+Control small fires
+
+PASS METHOD:
+P - Pull pin
+A - Aim at base
+S - Squeeze handle
+S - Sweep side to side`);
     }
 
     function showAlarm() {
       hideAll();
-      document.querySelector('#alarm').setAttribute('visible', true);
-      const text = "FIRE ALARM\n------------------\nPURPOSE:\nAlert everyone\n\nACTION:\n1. Break Glass\n2. Press Button\n3. Evacuate";
-      document.querySelector('#info').setAttribute('value', text);
+      alarm.setAttribute('visible', true);
+      info.setAttribute('value',
+`FIRE ALARM
+
+PURPOSE:
+Alert everyone
+
+ACTION:
+1. Press alarm
+2. Warn people
+3. Evacuate`);
     }
 
     function showSmoke() {
       hideAll();
-      document.querySelector('#smoke').setAttribute('visible', true);
-      const text = "SMOKE DETECTOR\n------------------\nPURPOSE:\nDetect smoke early\n\nNOTE:\n- Auto Trigger\n- Do not cover";
-      document.querySelector('#info').setAttribute('value', text);
+      smoke.setAttribute('visible', true);
+      info.setAttribute('value',
+`SMOKE DETECTOR
+
+PURPOSE:
+Detect smoke early
+
+NOTE:
+• Automatic alert
+• Do not cover`);
     }
+
+    window.onload = () => {
+      ext = document.querySelector('#ext');
+      alarm = document.querySelector('#alarm');
+      smoke = document.querySelector('#smoke');
+      info = document.querySelector('#info');
+    };
   </script>
 </head>
 
-<body style="margin: 0; overflow: hidden;">
+<body>
 
-  <div id="ui">
-    <div id="ui-inner">
-      <button onclick="showExtinguisher()">🧯 Extinguisher</button>
-      <button onclick="showAlarm()">🚨 Alarm</button>
-      <button onclick="showSmoke()">🌫 Detector</button>
-    </div>
+<div id="ui">
+  <div id="ui-inner">
+    <button onclick="showExtinguisher()">🧯 Extinguisher</button>
+    <button onclick="showAlarm()">🚨 Alarm</button>
+    <button onclick="showSmoke()">🌫 Detector</button>
   </div>
+</div>
 
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true;">
+<a-scene
+  embedded
+  vr-mode-ui="enabled: false"
+  arjs="debugUIEnabled: false;">
 
-    <a-assets>
-      <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
-      <a-asset-item id="alarmModel" src="fire_alarm.glb"></a-asset-item>
-      <a-asset-item id="smokeModel" src="apollo_smoke_detector.glb"></a-asset-item>
-    </a-assets>
+  <a-assets>
+    <a-asset-item id="extModel" src="fire_extinguisher.glb"></a-asset-item>
+    <a-asset-item id="alarmModel" src="fire_alarm.glb"></a-asset-item>
+    <a-asset-item id="smokeModel" src="apollo_smoke_detector.glb"></a-asset-item>
+  </a-assets>
 
-    <a-marker preset="hiro">
-      <a-entity light="type: ambient; color: #BBB"></a-entity>
-      <a-entity light="type: directional; color: #FFF; intensity: 0.6" position="-0.5 1 1"></a-entity>
+  <a-marker preset="hiro">
 
-      <a-entity id="ext" gltf-model="#extModel" scale="9 9 9" visible="true" auto-rotate></a-entity>
-      <a-entity id="alarm" gltf-model="#alarmModel" scale="0.25 0.25 0.25" visible="false" auto-rotate></a-entity>
-      <a-entity id="smoke" gltf-model="#smokeModel" scale="0.4 0.4 0.4" visible="false" auto-rotate></a-entity>
+    <a-entity light="type: ambient; color: #BBB"></a-entity>
+    <a-entity light="type: directional; intensity: 0.6" position="-0.5 1 1"></a-entity>
 
-      <a-entity position="1.5 1 0" rotation="-30 0 0"> <a-plane color="#000" opacity="0.8" width="2.5" height="2"></a-plane>
-        
-        <a-text id="info"
-                value="Select an item below"
-                align="center"
-                color="#FFF"
-                width="4"
-                position="0 0 0.05"> </a-text>
+    <a-entity id="ext" gltf-model="#extModel" scale="9 9 9" auto-rotate></a-entity>
+    <a-entity id="alarm" gltf-model="#alarmModel" scale="0.1 0.1 0.1" visible="false" auto-rotate></a-entity>
+    <a-entity id="smoke" gltf-model="#smokeModel" scale="0.5 0.5 0.5" visible="false" auto-rotate></a-entity>
 
-      </a-entity>
-      </a-marker>
-    <a-entity camera></a-entity>
-  </a-scene>
+    <!-- INFO PANEL -->
+    <a-entity position="2 1 0">
+      <a-plane width="2.8" height="2.2" color="#000" opacity="0.85"></a-plane>
+
+      <a-text id="info"
+              value="Select an item"
+              align="left"
+              color="#FFF"
+              width="2.5"
+              wrap-count="26"
+              position="-1 0 0.05">
+      </a-text>
+    </a-entity>
+
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
 </body>
 </html>
