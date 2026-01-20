@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
 
-  <!-- 🔒 LOCK MOBILE ZOOM -->
+  <!-- 🔒 LOCK ZOOM & SUPPORT PORTRAIT -->
   <meta name="viewport"
         content="width=device-width,
                  initial-scale=1.0,
@@ -26,14 +26,25 @@
       touch-action: manipulation;
       overscroll-behavior: none;
       font-family: Arial, sans-serif;
+      background: #000;
     }
 
+    /* ---------- UI CONTAINER ---------- */
     #ui {
       position: fixed;
-      bottom: 10px;
-      width: 100%;
+      left: 0;
+      right: 0;
+      bottom: env(safe-area-inset-bottom);
+      padding-bottom: 8px;
       text-align: center;
       z-index: 999;
+      pointer-events: auto;
+    }
+
+    #ui-inner {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     button {
@@ -45,12 +56,25 @@
       background: linear-gradient(135deg,#d32f2f,#b71c1c);
       color: white;
       cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,.3);
+      box-shadow: 0 4px 8px rgba(0,0,0,.35);
+    }
+
+    /* Hint text */
+    #hint {
+      position: fixed;
+      top: env(safe-area-inset-top);
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: #fff;
+      z-index: 999;
+      text-shadow: 0 2px 4px rgba(0,0,0,.6);
+      padding-top: 6px;
     }
   </style>
 
   <script>
-    /* Auto rotate model */
+    /* Auto rotate models */
     AFRAME.registerComponent('auto-rotate', {
       tick() {
         this.el.object3D.rotation.y += 0.003;
@@ -97,7 +121,7 @@ How to use:
 2. Alarm will sound loudly
 3. Evacuate immediately
 
-Do not ignore alarms.`
+Never ignore an alarm.`
       );
     }
 
@@ -124,17 +148,26 @@ Never cover or disable it.`
 
 <body>
 
+<!-- TOP HINT -->
+<div id="hint">📱 Designed for portrait mode</div>
+
 <!-- UI BUTTONS -->
 <div id="ui">
-  <button onclick="showExtinguisher()">🧯 Extinguisher</button>
-  <button onclick="showAlarm()">🚨 Alarm</button>
-  <button onclick="showSmoke()">🌫 Smoke Detector</button>
+  <div id="ui-inner">
+    <button onclick="showExtinguisher()">🧯 Extinguisher</button>
+    <button onclick="showAlarm()">🚨 Alarm</button>
+    <button onclick="showSmoke()">🌫 Smoke Detector</button>
+  </div>
 </div>
 
 <a-scene
   embedded
   vr-mode-ui="enabled: false"
-  arjs="sourceType: webcam; debugUIEnabled: false;">
+  renderer="precision: mediump; antialias: true;"
+  arjs="sourceType: webcam;
+        debugUIEnabled: false;
+        displayWidth: window.innerWidth;
+        displayHeight: window.innerHeight;">
 
   <!-- ASSETS -->
   <a-assets>
@@ -147,42 +180,33 @@ Never cover or disable it.`
   <a-marker preset="hiro">
 
     <!-- MODELS -->
-    <a-entity
-      id="ext"
-      gltf-model="#extModel"
-      scale="9 9 9"
-      visible="true"
-      auto-rotate>
-    </a-entity>
+    <a-entity id="ext"
+              gltf-model="#extModel"
+              scale="9 9 9"
+              visible="true"
+              auto-rotate></a-entity>
 
-    <a-entity
-      id="alarm"
-      gltf-model="#alarmModel"
-      scale="0.2 0.2 0.2"
-      visible="false"
-      auto-rotate>
-    </a-entity>
+    <a-entity id="alarm"
+              gltf-model="#alarmModel"
+              scale="0.25 0.25 0.25"
+              visible="false"
+              auto-rotate></a-entity>
 
-    <a-entity
-      id="smoke"
-      gltf-model="#smokeModel"
-      scale="1 1 1"
-      visible="false"
-      auto-rotate>
-    </a-entity>
+    <a-entity id="smoke"
+              gltf-model="#smokeModel"
+              scale="0.4 0.4 0.4"
+              visible="false"
+              auto-rotate></a-entity>
 
     <!-- INFO PANEL -->
-    <a-plane
-      position="3 2 0"
-      width="4"
-      height="2.4"
-      color="#ffffff"
-      opacity="0.95">
-    </a-plane>
+    <a-plane position="3 2 0"
+             width="4"
+             height="2.4"
+             color="#ffffff"
+             opacity="0.95"></a-plane>
 
-    <a-text
-      id="info"
-      value="🧯 FIRE EXTINGUISHER
+    <a-text id="info"
+            value="🧯 FIRE EXTINGUISHER
 
 Purpose:
 Used to control small fires.
@@ -192,11 +216,11 @@ P – Pull the pin
 A – Aim at the base
 S – Squeeze the handle
 S – Sweep side to side"
-      align="left"
-      color="#000000"
-      position="1.2 2.2 0.1"
-      width="3.6"
-      line-height="50">
+            align="left"
+            color="#000000"
+            position="1.2 2.2 0.1"
+            width="3.6"
+            line-height="50">
     </a-text>
 
   </a-marker>
